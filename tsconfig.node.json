@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "composite": true,
+    "skipLibCheck": true,
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "allowSyntheticDefaultImports": true
+  },
+  "include": [
+    "vite.config.ts",
+    "../../../AppData/Local/JetBrains/RustRover2025.1/javascript/typings/node/22.15.35/node_modules/@types/node/module.d.ts"
+  ]
+}
