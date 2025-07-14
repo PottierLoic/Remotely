@@ -14,8 +14,10 @@ type Host = {
 export default function App() {
   const [hosts, setHosts] = useState<Host[]>([])
   const [tabs, setTabs] = useState<Host[]>([])
-  const [activeId, setActiveId] = useState<string | null>(null)
+  const [activeId, setActiveId] = useState<number | null>(null)
   const [showModal, setShowModal] = useState(false)
+
+  const activeTab = tabs.find((t) => t.id === activeId)
 
   const refresh = () => {
     invoke<Host[]>("get_host_list").then(setHosts)
@@ -25,14 +27,14 @@ export default function App() {
     if (!tabs.find((t) => t.ip === conn.ip)) {
       setTabs([...tabs, conn])
     }
-    setActiveId(conn.ip)
+    setActiveId(conn.id)
   }
 
-  const closeTab = (id: string) => {
-    const remaining = tabs.filter((t) => t.ip !== id)
+  const closeTab = (id: number) => {
+    const remaining = tabs.filter((t) => t.id !== id)
     setTabs(remaining)
     if (activeId === id) {
-      setActiveId(remaining.length > 0 ? remaining[0].ip : null)
+      setActiveId(remaining.length > 0 ? remaining[0].id : null)
     }
   }
 
@@ -81,16 +83,16 @@ export default function App() {
           {tabs.map((tab) => (
             <div
               key={tab.ip}
-              onClick={() => setActiveId(tab.ip)}
+              onClick={() => setActiveId(tab.id)}
               className={`px-4 py-2 flex items-center gap-2 border-r cursor-pointer ${
-                activeId === tab.ip ? "bg-white font-semibold" : "hover:bg-gray-200"
+                activeId === tab.id ? "bg-white font-semibold" : "hover:bg-gray-200"
               }`}
             >
               <span>{tab.name}</span>
               <button
                 onClick={(e) => {
                   e.stopPropagation()
-                  closeTab(tab.ip)
+                  closeTab(tab.id)
                 }}
                 className="text-red-500 hover:text-red-700"
               >
@@ -102,20 +104,12 @@ export default function App() {
 
         {/* Session view */}
         <div className="p-6 overflow-auto flex-1">
-          {tabs.find((t) => t.ip === activeId) ? (
+          {activeTab ? (
             <div className="border rounded-lg bg-white p-6 shadow">
-              <h3 className="text-xl font-bold mb-2">
-                {tabs.find((t) => t.ip === activeId)!.name}
-              </h3>
-              <p className="text-gray-700 mb-1">
-                Protocol: {tabs.find((t) => t.ip === activeId)!.protocol}
-              </p>
-              <p className="text-gray-700">
-                IP: {tabs.find((t) => t.ip === activeId)!.ip}
-              </p>
-              <div className="mt-4 h-64 border rounded bg-gray-100 flex items-center justify-center text-gray-400">
-                [ Placeholder for session content ]
-              </div>
+              <h3 className="text-xl font-bold mb-2">{activeTab.name}</h3>
+              <p className="text-gray-700 mb-1">Protocol: {activeTab.protocol}</p>
+              <p className="text-gray-700">IP: {activeTab.ip}</p>
+              ...
             </div>
           ) : (
             <div className="text-gray-400 text-center pt-20">No session open</div>
